@@ -1,9 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabase = require('./config/supabase');
+const productRoutes = require('./routes/products');
 
 const app = express();
 app.use(cors());
@@ -14,6 +13,8 @@ app.get('/api/health', async (req, res) => {
   if (error) return res.status(500).json({ ok: false, error: error.message });
   res.json({ ok: true, message: 'MeatLink API is connected to Supabase' });
 });
+
+app.use('/api/products', productRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

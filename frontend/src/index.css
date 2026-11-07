@@ -35,3 +35,48 @@ th {
 .error {
   color: #b91c1c;
 }
+
+.product-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: white;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+}
+
+.product-form h3 {
+  width: 100%;
+  margin: 0 0 4px;
+}
+
+.product-form input,
+.product-form select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  background: #b91c1c;
+  color: white;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #666;
+}
+
+button.danger {
+  background: #444;
+}

@@ -1,5 +1,6 @@
 const express = require('express');
 const supabase = require('../config/supabase');
+const { verifyToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
 });
 
 // CREATE: magdagdag ng bagong product
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, requireAdmin, async (req, res) => {
   const { name, category, price, stock, unit } = req.body;
 
   if (!name || !category || price == null) {
@@ -34,7 +35,7 @@ router.post('/', async (req, res) => {
 });
 
 // UPDATE: baguhin ang product
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, requireAdmin, async (req, res) => {
   const { name, category, price, stock, unit } = req.body;
 
   const { data, error } = await supabase
@@ -53,7 +54,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // SOFT DELETE: i-archive ang product (hindi talaga binubura)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, requireAdmin, async (req, res) => {
   const { data, error } = await supabase
     .from('products')
     .update({ deleted_at: new Date().toISOString() })
@@ -70,7 +71,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Tingnan ang mga archived products
-router.get('/archived/list', async (req, res) => {
+router.get('/archived/list', verifyToken, requireAdmin, async (req, res) => {
   const { data, error } = await supabase
     .from('products')
     .select('*')
@@ -82,7 +83,7 @@ router.get('/archived/list', async (req, res) => {
 });
 
 // Ibalik ang archived product
-router.patch('/:id/restore', async (req, res) => {
+router.patch('/:id/restore', verifyToken, requireAdmin, async (req, res) => {
   const { data, error } = await supabase
     .from('products')
     .update({ deleted_at: null })

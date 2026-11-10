@@ -74,6 +74,6 @@ VITE_API_URL=
 
 ## Team
 
-- Member A: Products and Admin
-- Member B: Authentication and Orders
-- Member C: Real-time Chat and PWA
+- Genesis: Products and Admin
+- Jessa: Authentication and Orders
+- Shereen: Real-time Chat and PWA

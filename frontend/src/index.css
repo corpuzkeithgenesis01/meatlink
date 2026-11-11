@@ -80,3 +80,28 @@ button.secondary {
 button.danger {
   background: #444;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #b91c1c;
+  color: white;
+  padding: 12px 24px;
+}
+.navbar a { color: white; text-decoration: none; }
+.navbar .brand { font-size: 1.3rem; font-weight: bold; }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-right button { background: white; color: #b91c1c; }
+.auth-form {
+  max-width: 360px;
+  margin: 40px auto;
+  background: white;
+  padding: 24px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-form h2 { margin: 0; }
+.auth-form input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }

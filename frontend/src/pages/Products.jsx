@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { API_URL } from '../api';
+import { useAuth } from '../context/AuthContext';
 import ProductForm from '../components/ProductForm';
 
 function Products() {
+  const { token, user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -35,7 +39,10 @@ function Products() {
     try {
       const res = await fetch(url, {
         method: isEdit ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(data),
       });
       const result = await res.json();
@@ -57,6 +64,7 @@ function Products() {
     try {
       const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to archive product');
@@ -71,12 +79,14 @@ function Products() {
 
   return (
     <div>
-      <ProductForm
-        key={editingProduct ? editingProduct.id : 'new'}
-        editingProduct={editingProduct}
-        onSave={handleSave}
-        onCancel={() => setEditingProduct(null)}
-      />
+      {isAdmin && (
+        <ProductForm
+          key={editingProduct ? editingProduct.id : 'new'}
+          editingProduct={editingProduct}
+          onSave={handleSave}
+          onCancel={() => setEditingProduct(null)}
+        />
+      )}
 
       {error && <p className="error">{error}</p>}
 
@@ -88,7 +98,7 @@ function Products() {
             <th>Category</th>
             <th>Price</th>
             <th>Stock</th>
-            <th>Actions</th>
+            {isAdmin && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -98,12 +108,14 @@ function Products() {
               <td>{p.category}</td>
               <td>₱{p.price} / {p.unit}</td>
               <td>{p.stock}</td>
-              <td>
-                <button onClick={() => setEditingProduct(p)}>Edit</button>{' '}
-                <button className="danger" onClick={() => handleArchive(p.id)}>
-                  Archive
-                </button>
-              </td>
+              {isAdmin && (
+                <td>
+                  <button onClick={() => setEditingProduct(p)}>Edit</button>{' '}
+                  <button className="danger" onClick={() => handleArchive(p.id)}>
+                    Archive
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

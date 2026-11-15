@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { API_URL } from '../api';
-import { useAuth } from '../context/AuthContext';
-import ProductForm from '../components/ProductForm';
+import { API_URL } from '../../api';
+import { useAuth } from '../../context/AuthContext';
+import ProductForm from '../../components/ProductForm';
 
-function Products() {
-  const { token, user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+function AdminProducts() {
+  const { token } = useAuth();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,18 +78,17 @@ function Products() {
 
   return (
     <div>
-      {isAdmin && (
-        <ProductForm
-          key={editingProduct ? editingProduct.id : 'new'}
-          editingProduct={editingProduct}
-          onSave={handleSave}
-          onCancel={() => setEditingProduct(null)}
-        />
-      )}
+      <h2 className="page-title">Manage Products</h2>
+
+      <ProductForm
+        key={editingProduct ? editingProduct.id : 'new'}
+        editingProduct={editingProduct}
+        onSave={handleSave}
+        onCancel={() => setEditingProduct(null)}
+      />
 
       {error && <p className="error">{error}</p>}
 
-      <h2>Products</h2>
       <table>
         <thead>
           <tr>
@@ -98,7 +96,7 @@ function Products() {
             <th>Category</th>
             <th>Price</th>
             <th>Stock</th>
-            {isAdmin && <th>Actions</th>}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -108,14 +106,12 @@ function Products() {
               <td>{p.category}</td>
               <td>₱{p.price} / {p.unit}</td>
               <td>{p.stock}</td>
-              {isAdmin && (
-                <td>
-                  <button onClick={() => setEditingProduct(p)}>Edit</button>{' '}
-                  <button className="danger" onClick={() => handleArchive(p.id)}>
-                    Archive
-                  </button>
-                </td>
-              )}
+              <td>
+                <button onClick={() => setEditingProduct(p)}>Edit</button>{' '}
+                <button className="danger" onClick={() => handleArchive(p.id)}>
+                  Archive
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -124,4 +120,4 @@ function Products() {
   );
 }
 
-export default Products;
+export default AdminProducts;

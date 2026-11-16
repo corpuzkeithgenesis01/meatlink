@@ -6,3 +6,38 @@
   flex: 1;
   padding: 24px;
 }
+
+.page-title {
+  margin-top: 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white;
+  padding: 16px;
+  border-radius: 6px;
+  border-left: 4px solid #b91c1c;
+}
+
+.stat-card .stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.stat-card .stat-label {
+  margin: 0;
+  color: #666;
+}
+
+.coming-soon {
+  background: white;
+  padding: 24px;
+  border-radius: 6px;
+}

@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(readSaved);
 
   async function request(path, body) {
-    const res = await fetch(${API_URL}/api/auth/${path}, {
+    const res = await fetch($`{API_URL}/api/auth/${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

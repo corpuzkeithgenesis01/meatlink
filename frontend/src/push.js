@@ -40,8 +40,9 @@ export async function enablePush(token) {
   await navigator.serviceWorker.register('/sw.js');
   const registration = await navigator.serviceWorker.ready;
 
-  const keyRes = await fetch(${API_URL}/api/push/public-key);
-  const { publicKey } = await keyRes.json();
+  const keyRes = await fetch(API_URL + '/api/push/public-key');
+  const keyData = await keyRes.json();
+  const publicKey = keyData.publicKey;
   if (!publicKey) {
     throw new Error('Push is not set up on the server');
   }
@@ -54,11 +55,11 @@ export async function enablePush(token) {
     });
   }
 
-  const res = await fetch(${API_URL}/api/push/subscribe, {
+  const res = await fetch(API_URL + '/api/push/subscribe', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: Bearer ${token},
+      Authorization: 'Bearer ' + token,
     },
     body: JSON.stringify(subscription),
   });
@@ -77,11 +78,11 @@ export async function disablePush(token) {
   const subscription = await registration.pushManager.getSubscription();
   if (!subscription) return;
 
-  await fetch(${API_URL}/api/push/unsubscribe, {
+  await fetch(API_URL + '/api/push/unsubscribe', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: Bearer ${token},
+      Authorization: 'Bearer ' + token,
     },
     body: JSON.stringify({ endpoint: subscription.endpoint }),
   });

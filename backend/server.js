@@ -2,8 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const supabase = require('./config/supabase');
-const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
+const authRoutes = require('./routes/auth');
+const orderRoutes = require('./routes/orders');
+const pushRoutes = require('./routes/push');
 
 const app = express();
 app.use(cors());
@@ -17,7 +19,9 @@ app.get('/api/health', async (req, res) => {
 
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/push', pushRoutes);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+  console.log(Server running on port ${process.env.PORT});
 });

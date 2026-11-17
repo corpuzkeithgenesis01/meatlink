@@ -85,7 +85,7 @@ router.post('/', verifyToken, async (req, res) => {
 
     if (quantity > product.stock) {
       return res.status(400).json({
-        error: Not enough stock for ${product.name} (only ${product.stock} left),
+        error: `Not enough stock for ${product.name} (only ${product.stock} left)`,
       });
     }
 
@@ -149,8 +149,8 @@ router.post('/', verifyToken, async (req, res) => {
     .single();
 
   sendToAdmins({
-    title: New order #${order.id},
-    body: ${buyer?.name || 'A buyer'} placed an order worth ₱${total}.,
+    title: `New order #${order.id}`,
+    body: `${buyer?.name || 'A buyer'} placed an order worth ₱${total}.`,
     url: '/admin/orders',
   });
 
@@ -186,7 +186,7 @@ router.patch('/:id/status', verifyToken, requireAdmin, async (req, res) => {
 
   if (!ADMIN_STATUSES.includes(status)) {
     return res.status(400).json({
-      error: status must be one of: ${ADMIN_STATUSES.join(', ')},
+      error: `status must be one of: ${ADMIN_STATUSES.join(', ')}`,
     });
   }
 
@@ -221,8 +221,8 @@ router.patch('/:id/status', verifyToken, requireAdmin, async (req, res) => {
   }
 
   sendToUser(order.user_id, {
-    title: Order #${order.id},
-    body: Your order #${order.id} ${STATUS_MESSAGES[status]},
+    title: `Order #${order.id}`,
+    body: `Your order #${order.id} ${STATUS_MESSAGES[status]}`,
     url: '/orders',
   });
 
@@ -263,8 +263,8 @@ router.patch('/:id/cancel', verifyToken, async (req, res) => {
   await restoreStock(order.id);
 
   sendToAdmins({
-    title: Order #${order.id} cancelled,
-    body: The buyer cancelled order #${order.id}.,
+    title: `Order #${order.id} cancelled`,
+    body: `The buyer cancelled order #${order.id}.`,
     url: '/admin/orders',
   });
 

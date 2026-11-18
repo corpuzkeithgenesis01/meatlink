@@ -1,0 +1,16 @@
+.offline-banner {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 8px 24px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.offline-banner p {
+  margin: 2px 0;
+}
+
+.offline-banner.pending {
+  background: #dbeafe;
+  color: #1e40af;
+}

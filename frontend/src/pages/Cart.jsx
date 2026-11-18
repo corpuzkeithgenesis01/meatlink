@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { queueOrder } from '../offlineQueue';
 import './Orders.css';
 
 function Cart() {
@@ -14,30 +15,54 @@ function Cart() {
   const [pickupNotes, setPickupNotes] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [queued, setQueued] = useState(false);
 
   async function handlePlaceOrder() {
     setError('');
     setLoading(true);
 
-    try {
-      const res = await fetch(${API_URL}/api/orders, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: Bearer ${token},
-        },
-        body: JSON.stringify({
-          buyer_type: buyerType,
-          pickup_notes: pickupNotes,
-          items: items.map((i) => ({
-            product_id: i.product_id,
-            quantity: i.quantity,
-          })),
-        }),
-      });
+    const payload = {
+      buyer_type: buyerType,
+      pickup_notes: pickupNotes,
+      items: items.map((i) => ({
+        product_id: i.product_id,
+        quantity: i.quantity,
+      })),
+    };
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to place order');
+    let response = null;
+
+    if (navigator.onLine) {
+      try {
+        response = await fetch(`${API_URL}/api/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+      } catch {
+        response = null;
+      }
+    }
+
+    if (response === null) {
+      try {
+        await queueOrder(token, payload);
+        clearCart();
+        setQueued(true);
+      } catch {
+        setError('Could not save your order offline. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    try {
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to place order');
 
       clearCart();
       navigate('/orders');
@@ -46,6 +71,19 @@ function Cart() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (queued) {
+    return (
+      <div>
+        <h2>Order saved</h2>
+        <p className="notice">
+          You are offline, so your order was saved on this device. It will be
+          sent to the seller automatically when you are back online.
+        </p>
+        <Link to="/">Back to products</Link>
+      </div>
+    );
   }
 
   if (items.length === 0) {

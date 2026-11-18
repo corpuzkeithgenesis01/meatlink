@@ -23,6 +23,7 @@ function Navbar() {
         {user ? (
           <>
             <Link to="/orders">My Orders</Link>
+            {user.role !== 'admin' && <Link to="/chat">Chat</Link>}
             {user.role === 'admin' && <Link to="/admin">Admin</Link>}
             <NotificationButton />
             <span>Hi, {user.name} ({user.role})</span>

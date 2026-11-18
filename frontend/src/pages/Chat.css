@@ -1,0 +1,129 @@
+.chat-status {
+  color: #6b7280;
+  margin: 0 0 8px;
+}
+
+.chat-status.online {
+  color: #16a34a;
+}
+
+.chat-box {
+  background: white;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  height: 480px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-empty {
+  color: #666;
+  text-align: center;
+  margin: auto;
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.bubble p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.bubble span {
+  display: block;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+.bubble.mine {
+  align-self: flex-end;
+  background: #b91c1c;
+  color: white;
+}
+
+.bubble.theirs {
+  align-self: flex-start;
+  background: #eee;
+  color: #222;
+}
+
+.chat-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.admin-chat {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.admin-chat .chat-box {
+  flex: 1;
+  min-width: 280px;
+}
+
+.conversation-list {
+  width: 240px;
+  background: white;
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 540px;
+  overflow-y: auto;
+}
+
+.conversation-item {
+  text-align: left;
+  background: transparent;
+  color: #222;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.conversation-item:hover {
+  background: #f3f4f6;
+}
+
+.conversation-item.active {
+  background: #fee2e2;
+}
+
+.conversation-item strong {
+  display: block;
+}
+
+.conversation-item span {
+  display: block;
+  color: #666;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

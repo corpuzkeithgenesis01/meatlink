@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { API_URL } from '../api';
 import { useCart } from '../context/CartContext';
-import './Home.css';
 import './Orders.css';
 
 const CATEGORIES = ['all', 'chicken', 'pork'];

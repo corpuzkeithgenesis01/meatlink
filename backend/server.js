@@ -26,10 +26,9 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/chat', chatRoutes);
 
-// Gumawa ng HTTP server para magamit ng Express at Socket.io ang iisang port
 const server = http.createServer(app);
 setupSocket(server);
 
 server.listen(process.env.PORT, () => {
-  console.log(Server running on port ${process.env.PORT});
+  console.log(`Server running on port ${process.env.PORT}`);
 });

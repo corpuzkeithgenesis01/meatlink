@@ -91,14 +91,14 @@ export async function flushQueuedOrders() {
       let response;
 
       try {
-        response = await fetch(`${order.apiUrl}/api/orders, {
+        response = await fetch(`${order.apiUrl}/api/orders`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: Bearer ${order.token},
+            Authorization: `Bearer ${order.token}`,
           },
           body: JSON.stringify(order.payload),
-        }`);
+        });
       } catch {
         break;
       }

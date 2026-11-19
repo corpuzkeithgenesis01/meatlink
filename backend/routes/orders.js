@@ -161,7 +161,7 @@ router.post('/', verifyToken, async (req, res) => {
 router.get('/mine', verifyToken, async (req, res) => {
   const { data, error } = await supabase
     .from('orders')
-    .select(', order_items()')
+    .select('*, order_items(*)')
     .eq('user_id', req.user.id)
     .order('created_at', { ascending: false });
 
@@ -173,7 +173,7 @@ router.get('/mine', verifyToken, async (req, res) => {
 router.get('/', verifyToken, requireAdmin, async (req, res) => {
   const { data, error } = await supabase
     .from('orders')
-    .select(', users(name, email), order_items()')
+    .select('*, users(name, email), order_items(*)')
     .order('created_at', { ascending: false });
 
   if (error) return res.status(500).json({ error: error.message });

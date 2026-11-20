@@ -1,0 +1,51 @@
+# Render Blueprint for MeatLink
+# - meatlink-api: Express REST API + Socket.io
+# - meatlink-web: React/Vite static site
+#
+# Secrets (sync: false) ay itatag ka sa Render Dashboard pag gumawa ng Blueprint.
+# Huwag ilagay ang tunay na values sa file na 'to.
+
+services:
+  - type: web
+    name: meatlink-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Awtomatikong itinatakda ng Render ang PORT.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+
+  - type: web
+    name: meatlink-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_API_URL
+        value: https://meatlink-api.onrender.com
+    # React Router: ihain ang index.html sa mga path gaya ng /orders o /admin/orders.
+    # Existing files (assets) ay una pa ring sine-serve ng Render.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

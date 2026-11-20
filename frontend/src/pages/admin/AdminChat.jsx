@@ -20,9 +20,9 @@ function AdminChat() {
 
   const loadConversations = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/chat/conversations, {
-        headers: { Authorization: Bearer ${token} },
-      }`);
+      const res = await fetch(`${API_URL}/api/chat/conversations`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load conversations');
       setConversations(data);
@@ -38,9 +38,9 @@ function AdminChat() {
       setError('');
 
       try {
-        const res = await fetch(`${API_URL}/api/chat/conversations/${buyerId}, {
-          headers: { Authorization: Bearer ${token} },
-        }`);
+        const res = await fetch(`${API_URL}/api/chat/conversations/${buyerId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed to load messages');
 

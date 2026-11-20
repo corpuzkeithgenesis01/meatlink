@@ -17,9 +17,9 @@ function Chat() {
 
   const loadHistory = useCallback(async () => {
     try {
-      const res = await fetch`(${API_URL}/api/chat/messages, {
-        headers: { Authorization: Bearer ${token} },
-      })`;
+      const res = await fetch(`${API_URL}/api/chat/messages`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load messages');
       setMessages(data);

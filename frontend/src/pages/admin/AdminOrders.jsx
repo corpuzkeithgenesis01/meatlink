@@ -111,6 +111,18 @@ function AdminOrders() {
               <p className="order-meta">
                 {new Date(order.created_at).toLocaleString()} · {order.buyer_type}
               </p>
+              <p className="order-meta">
+                {order.fulfillment === 'delivery' ? 'Delivery' : 'Pick-up'} ·{' '}
+                {order.payment_method === 'cod'
+                  ? 'COD (cash on delivery)'
+                  : 'COP (cash on pick-up)'}
+              </p>
+              {order.fulfillment === 'delivery' && (
+                <p className="order-meta">
+                  Address: {order.delivery_street}, {order.delivery_barangay},{' '}
+                  {order.delivery_municipality}
+                </p>
+              )}
               {order.pickup_notes && (
                 <p className="order-meta">Notes: {order.pickup_notes}</p>
               )}

@@ -6,6 +6,62 @@ const { sendToUser, sendToAdmins } = require('../utils/push');
 const router = express.Router();
 
 const ADMIN_STATUSES = ['confirmed', 'ready', 'completed', 'cancelled'];
+const FULFILLMENTS = ['pickup', 'delivery'];
+const PAYMENT_METHODS = ['cod', 'cop'];
+
+function normalizeOrderOptions(body) {
+  const fulfillment = FULFILLMENTS.includes(body.fulfillment)
+    ? body.fulfillment
+    : 'pickup';
+  const payment_method = PAYMENT_METHODS.includes(body.payment_method)
+    ? body.payment_method
+    : fulfillment === 'delivery'
+      ? 'cod'
+      : 'cop';
+
+  if (fulfillment !== 'delivery') {
+    return {
+      options: {
+        fulfillment,
+        payment_method,
+        delivery_street: null,
+        delivery_barangay: null,
+        delivery_municipality: null,
+      },
+    };
+  }
+
+  const delivery_street = String(body.delivery_street || '').trim();
+  const delivery_barangay = String(body.delivery_barangay || '').trim();
+  const delivery_municipality = String(body.delivery_municipality || '').trim();
+
+  if (!delivery_street || !delivery_barangay || !delivery_municipality) {
+    return {
+      error: 'Street, barangay, and municipality are required for delivery',
+    };
+  }
+
+  return {
+    options: {
+      fulfillment,
+      payment_method,
+      delivery_street,
+      delivery_barangay,
+      delivery_municipality,
+    },
+  };
+}
+
+function isMissingOptionColumns(error) {
+  const message = String((error && error.message) || '').toLowerCase();
+  return (
+    message.includes('fulfillment') ||
+    message.includes('payment_method') ||
+    message.includes('delivery_street') ||
+    message.includes('delivery_barangay') ||
+    message.includes('delivery_municipality')
+  );
+}
 
 const STATUS_MESSAGES = {
   confirmed: 'has been confirmed by the seller.',
@@ -14,7 +70,6 @@ const STATUS_MESSAGES = {
   cancelled: 'was cancelled.',
 };
 
-// Ibalik ang stock ng mga produkto ng isang order
 async function restoreStock(orderId) {
   const { data: items } = await supabase
     .from('order_items')
@@ -37,7 +92,6 @@ async function restoreStock(orderId) {
   }
 }
 
-// CREATE: mag-place ng order (buyer o admin na naka-login)
 router.post('/', verifyToken, async (req, res) => {
   const { items, buyer_type, pickup_notes } = req.body;
 
@@ -45,7 +99,9 @@ router.post('/', verifyToken, async (req, res) => {
     return res.status(400).json({ error: 'Your cart is empty' });
   }
 
-  // Pagsamahin ang magkaparehong product at suriin ang input
+  const { error: optionsError, options } = normalizeOrderOptions(req.body);
+  if (optionsError) return res.status(400).json({ error: optionsError });
+
   const quantities = new Map();
   for (const item of items) {
     const productId = Number(item.product_id);
@@ -102,7 +158,6 @@ router.post('/', verifyToken, async (req, res) => {
 
   total = Math.round(total * 100) / 100;
 
-  // I-save ang order
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
@@ -110,13 +165,19 @@ router.post('/', verifyToken, async (req, res) => {
       buyer_type: buyer_type === 'wholesale' ? 'wholesale' : 'retail',
       pickup_notes: pickup_notes || null,
       total,
+      ...options,
     })
     .select()
     .single();
 
+  if (isMissingOptionColumns(orderError)) {
+    return res.status(500).json({
+      error:
+        'Order options are not set up yet. Run backend/order_options_schema.sql in Supabase SQL Editor.',
+    });
+  }
   if (orderError) return res.status(500).json({ error: orderError.message });
 
-  // I-save ang mga item ng order
   const itemRows = lines.map((line) => ({
     order_id: order.id,
     product_id: line.product_id,
@@ -133,7 +194,6 @@ router.post('/', verifyToken, async (req, res) => {
     return res.status(500).json({ error: itemsError.message });
   }
 
-  // Bawasan ang stock
   for (const line of lines) {
     await supabase
       .from('products')
@@ -141,7 +201,6 @@ router.post('/', verifyToken, async (req, res) => {
       .eq('id', line.product_id);
   }
 
-  // Abisuhan ang mga admin
   const { data: buyer } = await supabase
     .from('users')
     .select('name')
@@ -157,7 +216,6 @@ router.post('/', verifyToken, async (req, res) => {
   res.status(201).json({ ...order, order_items: itemRows });
 });
 
-// READ: ang mga order ng naka-login na user
 router.get('/mine', verifyToken, async (req, res) => {
   const { data, error } = await supabase
     .from('orders')
@@ -169,7 +227,6 @@ router.get('/mine', verifyToken, async (req, res) => {
   res.json(data);
 });
 
-// READ: lahat ng order (admin lang)
 router.get('/', verifyToken, requireAdmin, async (req, res) => {
   const { data, error } = await supabase
     .from('orders')
@@ -180,7 +237,6 @@ router.get('/', verifyToken, requireAdmin, async (req, res) => {
   res.json(data);
 });
 
-// UPDATE: palitan ang status ng order (admin lang)
 router.patch('/:id/status', verifyToken, requireAdmin, async (req, res) => {
   const { status } = req.body;
 
@@ -229,7 +285,6 @@ router.patch('/:id/status', verifyToken, requireAdmin, async (req, res) => {
   res.json(updated);
 });
 
-// DELETE (cancel): kanselahin ng buyer ang sarili niyang pending na order
 router.patch('/:id/cancel', verifyToken, async (req, res) => {
   const { data: order, error: findError } = await supabase
     .from('orders')

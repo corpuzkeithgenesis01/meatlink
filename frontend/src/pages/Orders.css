@@ -95,3 +95,49 @@
   border-radius: 4px;
   margin-bottom: 16px;
 }
+
+.cart-section {
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 0;
+}
+
+.cart-section legend {
+  padding: 0 6px;
+  font-weight: bold;
+  color: #444;
+}
+
+.option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.option-row label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.option-row input[type='radio'] {
+  accent-color: #b91c1c;
+}
+
+.address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.address-grid label input {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .address-grid { grid-template-columns: 1fr; }
+}

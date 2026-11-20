@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { showError } from '../utils/alerts';
+import { confirmAction, showError, showSuccess } from '../utils/alerts';
 import {
   disablePush,
   enablePush,
@@ -31,15 +31,30 @@ function NotificationButton() {
   if (!user || !pushSupported()) return null;
 
   async function handleClick() {
+    const confirmed = await confirmAction({
+      title: enabled ? 'Turn off notifications?' : 'Enable notifications?',
+      text: enabled
+        ? 'You will no longer receive order updates on this device.'
+        : 'MeatLink will ask for browser permission, then send order updates to this device.',
+      confirmButtonText: enabled ? 'Turn off' : 'Continue',
+      icon: 'question',
+    });
+    if (!confirmed) return;
+
     setLoading(true);
 
     try {
       if (enabled) {
         await disablePush(token);
         setEnabled(false);
+        showSuccess('Notifications are now off.', 'Notifications off');
       } else {
         await enablePush(token);
         setEnabled(true);
+        showSuccess(
+          'You will now receive order updates on this device.',
+          'Notifications on'
+        );
       }
     } catch (err) {
       showError(err.message, 'Notifications unavailable');

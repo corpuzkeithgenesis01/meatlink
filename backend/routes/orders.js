@@ -8,6 +8,8 @@ const router = express.Router();
 const ADMIN_STATUSES = ['confirmed', 'ready', 'completed', 'cancelled'];
 const FULFILLMENTS = ['pickup', 'delivery'];
 const PAYMENT_METHODS = ['cod', 'cop'];
+const WHOLESALE_MIN_KG = 10;
+const WHOLESALE_DISCOUNT_PER_KG = 10;
 
 function normalizeOrderOptions(body) {
   const fulfillment = FULFILLMENTS.includes(body.fulfillment)
@@ -61,6 +63,12 @@ function isMissingOptionColumns(error) {
     message.includes('delivery_barangay') ||
     message.includes('delivery_municipality')
   );
+}
+
+function isMissingDiscountColumn(error) {
+  return String((error && error.message) || '')
+    .toLowerCase()
+    .includes('discount');
 }
 
 const STATUS_MESSAGES = {
@@ -134,7 +142,9 @@ router.post('/', verifyToken, async (req, res) => {
 
   // Suriin ang stock at kuwentahin ang total
   const lines = [];
-  let total = 0;
+  const isWholesale = buyer_type === 'wholesale';
+  let subtotal = 0;
+  let totalKg = 0;
 
   for (const product of products) {
     const quantity = quantities.get(product.id);
@@ -145,7 +155,8 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
 
-    total += Number(product.price) * quantity;
+    subtotal += Number(product.price) * quantity;
+    if (String(product.unit).toLowerCase() === 'kg') totalKg += quantity;
     lines.push({
       product_id: product.id,
       product_name: product.name,
@@ -156,14 +167,22 @@ router.post('/', verifyToken, async (req, res) => {
     });
   }
 
-  total = Math.round(total * 100) / 100;
+  if (isWholesale && totalKg < WHOLESALE_MIN_KG) {
+    return res.status(400).json({
+      error: `Wholesale orders require at least ${WHOLESALE_MIN_KG} kg (currently ${totalKg} kg)`,
+    });
+  }
+
+  const discount = isWholesale ? totalKg * WHOLESALE_DISCOUNT_PER_KG : 0;
+  const total = Math.round(Math.max(subtotal - discount, 0) * 100) / 100;
 
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
       user_id: req.user.id,
-      buyer_type: buyer_type === 'wholesale' ? 'wholesale' : 'retail',
+      buyer_type: isWholesale ? 'wholesale' : 'retail',
       pickup_notes: pickup_notes || null,
+      discount,
       total,
       ...options,
     })
@@ -174,6 +193,12 @@ router.post('/', verifyToken, async (req, res) => {
     return res.status(500).json({
       error:
         'Order options are not set up yet. Run backend/order_options_schema.sql in Supabase SQL Editor.',
+    });
+  }
+  if (isMissingDiscountColumn(orderError)) {
+    return res.status(500).json({
+      error:
+        'Wholesale discount is not set up yet. Run backend/wholesale_discount_schema.sql in Supabase SQL Editor.',
     });
   }
   if (orderError) return res.status(500).json({ error: orderError.message });

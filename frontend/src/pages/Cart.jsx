@@ -6,6 +6,9 @@ import { useCart } from '../context/CartContext';
 import { queueOrder } from '../offlineQueue';
 import './Orders.css';
 
+const WHOLESALE_MIN_KG = 10;
+const WHOLESALE_DISCOUNT_PER_KG = 10;
+
 function Cart() {
   const { token } = useAuth();
   const { items, updateQuantity, removeItem, clearCart, total } = useCart();
@@ -22,6 +25,14 @@ function Cart() {
   const [loading, setLoading] = useState(false);
   const [queued, setQueued] = useState(false);
 
+  const isWholesale = buyerType === 'wholesale';
+  const totalKg = items
+    .filter((i) => String(i.unit).toLowerCase() === 'kg')
+    .reduce((sum, i) => sum + i.quantity, 0);
+  const wholesaleEligible = isWholesale && totalKg >= WHOLESALE_MIN_KG;
+  const discount = wholesaleEligible ? totalKg * WHOLESALE_DISCOUNT_PER_KG : 0;
+  const payable = Math.max(total - discount, 0);
+
   function handleFulfillmentChange(value) {
     setFulfillment(value);
     setPaymentMethod(value === 'delivery' ? 'cod' : 'cop');
@@ -29,6 +40,13 @@ function Cart() {
 
   async function handlePlaceOrder() {
     setError('');
+
+    if (isWholesale && !wholesaleEligible) {
+      setError(
+        `Wholesale orders require at least ${WHOLESALE_MIN_KG} kg (currently ${totalKg} kg).`
+      );
+      return;
+    }
 
     if (
       fulfillment === 'delivery' &&
@@ -256,6 +274,14 @@ function Cart() {
           </select>
         </label>
 
+        {isWholesale && (
+          <div className={wholesaleEligible ? 'notice' : 'discount-warning'}>
+            {wholesaleEligible
+              ? `Wholesale discount: ₱${WHOLESALE_DISCOUNT_PER_KG}/kg × ${totalKg} kg = -₱${discount.toFixed(2)}`
+              : `Wholesale requires at least ${WHOLESALE_MIN_KG} kg (currently ${totalKg} kg).`}
+          </div>
+        )}
+
         <label>
           Notes (optional)
           <textarea
@@ -266,11 +292,19 @@ function Cart() {
           />
         </label>
 
-        <p className="cart-total">Total: ₱{total.toFixed(2)}</p>
+        <p className="cart-total">
+          Total: ₱{payable.toFixed(2)}
+          {discount > 0 && (
+            <span className="discount-total"> (was ₱{total.toFixed(2)})</span>
+          )}
+        </p>
 
         {error && <p className="error">{error}</p>}
 
-        <button onClick={handlePlaceOrder} disabled={loading}>
+        <button
+          onClick={handlePlaceOrder}
+          disabled={loading || (isWholesale && !wholesaleEligible)}
+        >
           {loading ? 'Placing order...' : 'Place order'}
         </button>
       </div>

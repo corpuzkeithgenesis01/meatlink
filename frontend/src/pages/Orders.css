@@ -6,6 +6,25 @@
   margin-bottom: 12px;
 }
 
+.discount-warning {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.discount-total {
+  font-size: 0.85rem;
+  font-weight: normal;
+  color: #16a34a;
+}
+
+.discount-line {
+  color: #16a34a;
+  font-weight: bold;
+}
+
 .cart-box {
   background: white;
   padding: 16px;

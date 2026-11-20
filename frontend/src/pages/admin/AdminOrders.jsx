@@ -146,6 +146,12 @@ function AdminOrders() {
                 </tbody>
               </table>
 
+              {Number(order.discount) > 0 && (
+                <p className="order-meta discount-line">
+                  Wholesale discount: -₱{Number(order.discount).toFixed(2)}
+                </p>
+              )}
+
               <p className="cart-total">Total: ₱{order.total}</p>
 
               {isOpen && (

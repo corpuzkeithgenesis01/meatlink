@@ -12,36 +12,16 @@ const setupSocket = require('./socket');
 
 const app = express();
 
-// Explicit CORS configuration para sa meatlink-web at local development
-const allowedOrigins = [
-  'https://onrender.com',
-  'http://localhost:5173',
-  'http://localhost:3000'
-];
-
-if (process.env.CORS_ORIGIN) {
-  allowedOrigins.push(process.env.CORS_ORIGIN.replace(/\/$/, ''));
-}
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (gaya ng mobile apps, Postman, o server-to-server)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(null, true); // Pansamantalang allow lahat kung may ibang preview URL
-  },
+  origin: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 app.use(express.json());
 
-// Root route para sa default health check ng Render
 app.get('/', (req, res) => {
   res.status(200).json({ ok: true, message: 'MeatLink API is running' });
 });
@@ -87,14 +67,8 @@ app.use('/api/chat', chatRoutes);
 const server = http.createServer(app);
 setupSocket(server);
 
-<<<<<<< HEAD
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
-=======
-server.listen(process.env.PORT || 5000, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
->>>>>>> 9b123e442cc6915a2ce2b0ae50d20e33e0d1f6b9
-  // Warm up the Supabase connection so the first request is fast.
   supabase.from('products').select('id').limit(1).then(() => {}).catch(() => {});
 });

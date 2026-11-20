@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { API_URL } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import ProductForm from '../../components/ProductForm';
+import { confirmAction } from '../../utils/alerts';
 
 function AdminProducts() {
   const { token } = useAuth();
@@ -57,7 +58,12 @@ function AdminProducts() {
   }
 
   async function handleArchive(id) {
-    if (!window.confirm('Archive this product?')) return;
+    const confirmed = await confirmAction({
+      title: 'Archive this product?',
+      text: 'It will be hidden from customers. You can restore it later.',
+      confirmButtonText: 'Yes, archive it',
+    });
+    if (!confirmed) return;
     setError('');
 
     try {

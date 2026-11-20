@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { confirmAction } from '../utils/alerts';
 import './Orders.css';
 
 function MyOrders() {
@@ -31,7 +32,12 @@ function MyOrders() {
   }, [loadOrders]);
 
   async function handleCancel(id) {
-    if (!window.confirm('Cancel this order?')) return;
+    const confirmed = await confirmAction({
+      title: 'Cancel this order?',
+      text: 'This action cannot be undone.',
+      confirmButtonText: 'Yes, cancel it',
+    });
+    if (!confirmed) return;
     setError('');
 
     try {

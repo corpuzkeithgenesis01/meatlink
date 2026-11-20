@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { showError } from '../utils/alerts';
 import {
   disablePush,
   enablePush,
@@ -41,7 +42,7 @@ function NotificationButton() {
         setEnabled(true);
       }
     } catch (err) {
-      window.alert(err.message);
+      showError(err.message, 'Notifications unavailable');
     } finally {
       setLoading(false);
     }

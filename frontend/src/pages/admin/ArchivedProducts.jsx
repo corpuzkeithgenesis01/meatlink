@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { API_URL } from '../../api';
 import { useAuth } from '../../context/AuthContext';
+import { confirmAction } from '../../utils/alerts';
 
 function ArchivedProducts() {
   const { token } = useAuth();
@@ -29,7 +30,12 @@ function ArchivedProducts() {
   }, [loadArchived]);
 
   async function handleRestore(id) {
-    if (!window.confirm('Restore this product?')) return;
+    const confirmed = await confirmAction({
+      title: 'Restore this product?',
+      text: 'It will be available to customers again.',
+      confirmButtonText: 'Yes, restore it',
+    });
+    if (!confirmed) return;
     setError('');
 
     try {

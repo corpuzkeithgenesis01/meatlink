@@ -87,9 +87,14 @@ app.use('/api/chat', chatRoutes);
 const server = http.createServer(app);
 setupSocket(server);
 
+<<<<<<< HEAD
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
+=======
+server.listen(process.env.PORT || 5000, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
+>>>>>>> 9b123e442cc6915a2ce2b0ae50d20e33e0d1f6b9
   // Warm up the Supabase connection so the first request is fast.
   supabase.from('products').select('id').limit(1).then(() => {}).catch(() => {});
 });

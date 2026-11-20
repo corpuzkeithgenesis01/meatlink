@@ -114,6 +114,12 @@ async function notify(body) {
     });
   } catch {
   }
+
+  await tellClients({
+    type: 'push-notification',
+    title: 'MeatLink',
+    body,
+  });
 }
 
 async function tellClients(message) {
@@ -182,12 +188,19 @@ self.addEventListener('push', (event) => {
   }
 
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
-      data: { url: data.url },
-    })
+    Promise.all([
+      self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        data: { url: data.url },
+      }),
+      tellClients({
+        type: 'push-notification',
+        title: data.title,
+        body: data.body,
+      }),
+    ])
   );
 });
 

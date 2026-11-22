@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Whole chicken illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff8f3"/><stop offset="1" stop-color="#ffe4d6"/></linearGradient>
+    <linearGradient id="body" x1="0.2" y1="0" x2="0.8" y2="1"><stop stop-color="#ffe3cf"/><stop offset="0.55" stop-color="#f4c3a5"/><stop offset="1" stop-color="#df9d7c"/></linearGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffead9"/><stop offset="1" stop-color="#e7ac8c"/></linearGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#7c3b22" flood-opacity="0.16"/></filter>
+  </defs>
+  <rect width="400" height="400" rx="28" fill="url(#bg)"/>
+  <circle cx="330" cy="74" r="64" fill="#fff" opacity="0.35"/>
+  <circle cx="72" cy="330" r="80" fill="#fff" opacity="0.22"/>
+  <ellipse cx="200" cy="340" rx="118" ry="16" fill="#8a4b2f" opacity="0.12"/>
+  <g filter="url(#sh)">
+    <path d="M200 88c58 0 96 46 96 110 0 58-22 98-60 120-14 8-58 8-72 0-38-22-60-62-60-120 0-64 38-110 96-110Z" fill="url(#body)" stroke="#d99473" stroke-width="3"/>
+    <path d="M132 178c-30-12-56 2-58 30-2 26 26 42 58 28 18-8 26-30 20-48-4-6-12-9-20-10Z" fill="url(#wing)" stroke="#d99473" stroke-width="3"/>
+    <path d="M268 178c30-12 56 2 58 30 2 26-26 42-58 28-18-8-26-30-20-48 4-6 12-9 20-10Z" fill="url(#wing)" stroke="#d99473" stroke-width="3"/>
+    <path d="M156 302c-4 22-2 38 10 44 14 8 26-2 28-20 2-12-2-22-10-30Z" fill="#f7d2ba" stroke="#d99473" stroke-width="3"/>
+    <path d="M244 302c4 22 2 38-10 44-14 8-26-2-28-20-2-12 2-22 10-30Z" fill="#f7d2ba" stroke="#d99473" stroke-width="3"/>
+    <path d="M186 112c-12 12-18 34-16 58" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.55"/>
+    <circle cx="236" cy="180" r="5" fill="#c98365" opacity="0.5"/>
+    <circle cx="172" cy="214" r="4" fill="#c98365" opacity="0.45"/>
+  </g>
+  <path d="M200 62c-6 10-6 18 0 26 6-8 6-16 0-26Z" fill="#e08e6c"/>
+</svg>

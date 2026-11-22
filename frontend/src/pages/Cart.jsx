@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import ProductImage from '../components/ProductImage';
 import { queueOrder } from '../offlineQueue';
 import './Orders.css';
 
@@ -11,7 +12,7 @@ const WHOLESALE_DISCOUNT_PER_KG = 10;
 
 function Cart() {
   const { token } = useAuth();
-  const { items, updateQuantity, removeItem, clearCart, total } = useCart();
+  const { items, count, updateQuantity, removeItem, clearCart, total } = useCart();
   const navigate = useNavigate();
 
   const [buyerType, setBuyerType] = useState('retail');
@@ -117,196 +118,219 @@ function Cart() {
 
   if (queued) {
     return (
-      <div>
+      <div className="empty-state">
+        <div className="empty-state__icon">📦</div>
         <h2>Order saved</h2>
         <p className="notice">
           You are offline, so your order was saved on this device. It will be
           sent to the seller automatically when you are back online.
         </p>
-        <Link to="/">Back to products</Link>
+        <Link className="btn btn-primary" to="/">Back to products</Link>
       </div>
     );
   }
 
   if (items.length === 0) {
     return (
-      <div>
-        <h2>Your Cart</h2>
-        <p>Your cart is empty.</p>
-        <Link to="/">Browse products</Link>
+      <div className="empty-state">
+        <div className="empty-state__icon">🛒</div>
+        <h2>Your cart is empty</h2>
+        <p>Fresh cuts are waiting for you. Add a few favorites to get started.</p>
+        <Link className="btn btn-primary" to="/">Browse products</Link>
       </div>
     );
   }
 
   return (
     <div>
-      <h2>Your Cart</h2>
+      <div className="page-heading">
+        <div>
+          <span className="eyebrow">Checkout</span>
+          <h2>Your cart</h2>
+          <p>Review your cuts and choose how you want to get them.</p>
+        </div>
+        <Link className="text-link" to="/">← Continue shopping</Link>
+      </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="cart-layout">
+        <section className="card cart-items">
+          <header className="cart-items__head">
+            <h3>Items in your cart</h3>
+            <span className="muted">{count} item{count === 1 ? '' : 's'}</span>
+          </header>
+
           {items.map((i) => (
-            <tr key={i.product_id}>
-              <td>{i.name}</td>
-              <td>₱{i.price} / {i.unit}</td>
-              <td>
-                <input
-                  className="qty-input"
-                  type="number"
-                  min="1"
-                  max={i.stock}
-                  value={i.quantity}
-                  onChange={(e) =>
-                    updateQuantity(i.product_id, Number(e.target.value) || 1)
-                  }
-                />{' '}
-                {i.unit}
-              </td>
-              <td>₱{(i.price * i.quantity).toFixed(2)}</td>
-              <td>
-                <button className="danger" onClick={() => removeItem(i.product_id)}>
+            <div className="cart-item" key={i.product_id}>
+              <ProductImage product={i} />
+              <div className="cart-item__info">
+                <h4>{i.name}</h4>
+                <p className="muted">₱{Number(i.price).toFixed(2)} / {i.unit}</p>
+                <div className="qty-stepper" aria-label={`Quantity for ${i.name}`}>
+                  <button
+                    type="button"
+                    aria-label="Decrease quantity"
+                    disabled={i.quantity <= 1}
+                    onClick={() => updateQuantity(i.product_id, i.quantity - 1)}
+                  >
+                    −
+                  </button>
+                  <span>{i.quantity}</span>
+                  <button
+                    type="button"
+                    aria-label="Increase quantity"
+                    disabled={i.quantity >= i.stock}
+                    onClick={() => updateQuantity(i.product_id, i.quantity + 1)}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className="cart-item__line">
+                <strong>₱{(i.price * i.quantity).toFixed(2)}</strong>
+                <button
+                  type="button"
+                  className="remove-link"
+                  onClick={() => removeItem(i.product_id)}
+                >
                   Remove
                 </button>
-              </td>
-            </tr>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </section>
 
-      <div className="cart-box">
-        <fieldset className="cart-section">
-          <legend>Order type</legend>
-          <div className="option-row">
-            <label>
-              <input
-                type="radio"
-                name="fulfillment"
-                value="pickup"
-                checked={fulfillment === 'pickup'}
-                onChange={() => handleFulfillmentChange('pickup')}
-              />
-              Pick up
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="fulfillment"
-                value="delivery"
-                checked={fulfillment === 'delivery'}
-                onChange={() => handleFulfillmentChange('delivery')}
-              />
-              Delivery
-            </label>
-          </div>
-        </fieldset>
+        <aside className="card cart-summary">
+          <h3>Order details</h3>
 
-        {fulfillment === 'delivery' && (
           <fieldset className="cart-section">
-            <legend>Delivery address</legend>
-            <div className="address-grid">
+            <legend>How would you like it?</legend>
+            <div className="segmented">
               <label>
-                Street
                 <input
-                  placeholder="House no. / street"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
+                  type="radio"
+                  name="fulfillment"
+                  value="pickup"
+                  checked={fulfillment === 'pickup'}
+                  onChange={() => handleFulfillmentChange('pickup')}
                 />
+                <span>🏪 Pick-up</span>
               </label>
               <label>
-                Barangay
                 <input
-                  placeholder="Barangay"
-                  value={barangay}
-                  onChange={(e) => setBarangay(e.target.value)}
+                  type="radio"
+                  name="fulfillment"
+                  value="delivery"
+                  checked={fulfillment === 'delivery'}
+                  onChange={() => handleFulfillmentChange('delivery')}
                 />
-              </label>
-              <label>
-                Municipality
-                <input
-                  placeholder="Municipality"
-                  value={municipality}
-                  onChange={(e) => setMunicipality(e.target.value)}
-                />
+                <span>🚚 Delivery</span>
               </label>
             </div>
           </fieldset>
-        )}
 
-        <fieldset className="cart-section">
-          <legend>Payment method</legend>
-          <div className="option-row">
-            <label>
-              <input
-                type="radio"
-                name="payment"
-                value="cod"
-                checked={paymentMethod === 'cod'}
-                onChange={() => setPaymentMethod('cod')}
-              />
-              COD — Cash on delivery
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="payment"
-                value="cop"
-                checked={paymentMethod === 'cop'}
-                onChange={() => setPaymentMethod('cop')}
-              />
-              COP — Cash on pick-up
-            </label>
-          </div>
-        </fieldset>
-
-        <label>
-          Buyer type
-          <select value={buyerType} onChange={(e) => setBuyerType(e.target.value)}>
-            <option value="retail">Retail (household)</option>
-            <option value="wholesale">Wholesale (school, bulk)</option>
-          </select>
-        </label>
-
-        {isWholesale && (
-          <div className={wholesaleEligible ? 'notice' : 'discount-warning'}>
-            {wholesaleEligible
-              ? `Wholesale discount: ₱${WHOLESALE_DISCOUNT_PER_KG}/kg × ${totalKg} kg = -₱${discount.toFixed(2)}`
-              : `Wholesale requires at least ${WHOLESALE_MIN_KG} kg (currently ${totalKg} kg).`}
-          </div>
-        )}
-
-        <label>
-          Notes (optional)
-          <textarea
-            rows="3"
-            placeholder="Preferred time, cuts, etc."
-            value={pickupNotes}
-            onChange={(e) => setPickupNotes(e.target.value)}
-          />
-        </label>
-
-        <p className="cart-total">
-          Total: ₱{payable.toFixed(2)}
-          {discount > 0 && (
-            <span className="discount-total"> (was ₱{total.toFixed(2)})</span>
+          {fulfillment === 'delivery' && (
+            <fieldset className="cart-section">
+              <legend>Delivery address</legend>
+              <div className="address-grid">
+                <label>
+                  Street
+                  <input
+                    placeholder="House no. / street"
+                    value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Barangay
+                  <input
+                    placeholder="Barangay"
+                    value={barangay}
+                    onChange={(e) => setBarangay(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Municipality
+                  <input
+                    placeholder="Municipality"
+                    value={municipality}
+                    onChange={(e) => setMunicipality(e.target.value)}
+                  />
+                </label>
+              </div>
+            </fieldset>
           )}
-        </p>
 
-        {error && <p className="error">{error}</p>}
+          <fieldset className="cart-section">
+            <legend>Payment method</legend>
+            <div className="segmented">
+              <label>
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cop"
+                  checked={paymentMethod === 'cop'}
+                  onChange={() => setPaymentMethod('cop')}
+                />
+                <span>Cash on pick-up</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cod"
+                  checked={paymentMethod === 'cod'}
+                  onChange={() => setPaymentMethod('cod')}
+                />
+                <span>Cash on delivery</span>
+              </label>
+            </div>
+          </fieldset>
 
-        <button
-          onClick={handlePlaceOrder}
-          disabled={loading || (isWholesale && !wholesaleEligible)}
-        >
-          {loading ? 'Placing order...' : 'Place order'}
-        </button>
+          <label className="field">
+            Buyer type
+            <select value={buyerType} onChange={(e) => setBuyerType(e.target.value)}>
+              <option value="retail">Retail (household)</option>
+              <option value="wholesale">Wholesale (school, bulk)</option>
+            </select>
+          </label>
+
+          {isWholesale && (
+            <div className={wholesaleEligible ? 'notice' : 'discount-warning'}>
+              {wholesaleEligible
+                ? `Wholesale discount: ₱${WHOLESALE_DISCOUNT_PER_KG}/kg × ${totalKg} kg = -₱${discount.toFixed(2)}`
+                : `Wholesale requires at least ${WHOLESALE_MIN_KG} kg (currently ${totalKg} kg).`}
+            </div>
+          )}
+
+          <label className="field">
+            Notes (optional)
+            <textarea
+              rows="3"
+              placeholder="Preferred time, cuts, etc."
+              value={pickupNotes}
+              onChange={(e) => setPickupNotes(e.target.value)}
+            />
+          </label>
+
+          <div className="summary-total">
+            <span>Total</span>
+            <strong>₱{payable.toFixed(2)}</strong>
+          </div>
+          {discount > 0 && (
+            <p className="discount-total">You saved ₱{discount.toFixed(2)} with wholesale pricing.</p>
+          )}
+
+          {error && <p className="error">{error}</p>}
+
+          <button
+            className="btn btn-primary btn-block"
+            onClick={handlePlaceOrder}
+            disabled={loading || (isWholesale && !wholesaleEligible)}
+          >
+            {loading ? 'Placing order...' : 'Place order'}
+          </button>
+          <p className="summary-note">No payment online — pay when you receive your order.</p>
+        </aside>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { confirmAction } from '../utils/alerts';
+import ProductImage from '../components/ProductImage';
 import './Orders.css';
 
 function MyOrders() {
@@ -58,14 +59,24 @@ function MyOrders() {
 
   return (
     <div>
-      <h2>My Orders</h2>
+      <div className="page-heading">
+        <div>
+          <span className="eyebrow">Your history</span>
+          <h2>My orders</h2>
+          <p>Track your recent orders and their current status.</p>
+        </div>
+        <Link className="text-link" to="/">+ New order</Link>
+      </div>
 
       {error && <p className="error">{error}</p>}
 
       {orders.length === 0 ? (
-        <p>
-          You have no orders yet. <Link to="/">Browse products</Link>
-        </p>
+        <div className="empty-state">
+          <div className="empty-state__icon">📋</div>
+          <h3>No orders yet</h3>
+          <p>When you place an order, it will show up here.</p>
+          <Link className="btn btn-primary" to="/">Browse products</Link>
+        </div>
       ) : (
         orders.map((order) => (
           <div key={order.id} className="order-card">
@@ -104,7 +115,12 @@ function MyOrders() {
               <tbody>
                 {order.order_items.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.product_name}</td>
+                    <td>
+                      <div className="order-product">
+                        <ProductImage product={{ name: item.product_name, product_id: item.product_id }} />
+                        <span>{item.product_name}</span>
+                      </div>
+                    </td>
                     <td>₱{item.unit_price} / {item.unit}</td>
                     <td>{item.quantity} {item.unit}</td>
                   </tr>

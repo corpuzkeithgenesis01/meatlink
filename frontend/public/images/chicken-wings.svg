@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Chicken wings illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff9f4"/><stop offset="1" stop-color="#ffe6d9"/></linearGradient>
+    <linearGradient id="meat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe8d8"/><stop offset="0.55" stop-color="#f3c0a3"/><stop offset="1" stop-color="#dc9877"/></linearGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="9" stdDeviation="9" flood-color="#7c3b22" flood-opacity="0.16"/></filter>
+  </defs>
+  <rect width="400" height="400" rx="28" fill="url(#bg)"/>
+  <circle cx="332" cy="76" r="60" fill="#fff" opacity="0.35"/>
+  <ellipse cx="200" cy="330" rx="124" ry="15" fill="#8a4b2f" opacity="0.12"/>
+  <g filter="url(#sh)">
+    <path d="M96 214c-24-22-26-62-8-86 16-20 42-16 56 6 12 18 8 40-6 56l-20 24-22 0Z" fill="url(#meat)" stroke="#d99473" stroke-width="3"/>
+    <path d="M180 162c-16-28-6-68 20-84 24-14 48 0 52 26 4 22-10 42-30 52l-26 12-16-6Z" fill="url(#meat)" stroke="#d99473" stroke-width="3"/>
+    <path d="M268 214c24-22 26-62 8-86-16-20-42-16-56 6-12 18-8 40 6 56l20 24 22 0Z" fill="url(#meat)" stroke="#d99473" stroke-width="3"/>
+    <path d="M110 154c-6 16-6 32 0 46" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+    <path d="M208 106c-6 16-6 30 0 44" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+    <path d="M290 154c6 16 6 32 0 46" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+    <circle cx="140" cy="250" r="9" fill="#fff5ed" stroke="#d99473" stroke-width="2"/>
+    <circle cx="260" cy="250" r="9" fill="#fff5ed" stroke="#d99473" stroke-width="2"/>
+  </g>
+</svg>

@@ -15,25 +15,44 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="brand">MeatLink</Link>
+      <Link to="/" className="brand" aria-label="MeatLink home">
+        <span className="brand-mark">M</span>
+        <span>Meat<span>Link</span></span>
+      </Link>
 
       <div className="nav-right">
-        <Link to="/cart">Cart ({count})</Link>
+        <div className="nav-links">
+          <Link to="/">Shop</Link>
+          <Link to="/cart" className="nav-cart">
+            Cart
+            {count > 0 && <span className="cart-badge">{count}</span>}
+          </Link>
+          {user && (
+            <>
+              <Link to="/orders">My Orders</Link>
+              {user.role !== 'admin' && <Link to="/chat">Chat</Link>}
+              {user.role === 'admin' && <Link to="/admin">Admin</Link>}
+            </>
+          )}
+        </div>
 
         {user ? (
-          <>
-            <Link to="/orders">My Orders</Link>
-            {user.role !== 'admin' && <Link to="/chat">Chat</Link>}
-            {user.role === 'admin' && <Link to="/admin">Admin</Link>}
+          <div className="nav-account">
             <NotificationButton />
-            <span>Hi, {user.name} ({user.role})</span>
-            <button onClick={handleLogout}>Logout</button>
-          </>
+            <span className="user-chip">
+              <span className="avatar">{String(user.name || '?').charAt(0).toUpperCase()}</span>
+              <span className="user-chip__text">
+                <strong>{user.name}</strong>
+                <small>{user.role}</small>
+              </span>
+            </span>
+            <button className="btn btn-outline-light" onClick={handleLogout}>Logout</button>
+          </div>
         ) : (
-          <>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
-          </>
+          <div className="nav-account">
+            <Link className="btn btn-outline-light" to="/login">Login</Link>
+            <Link className="btn btn-light" to="/register">Get started</Link>
+          </div>
         )}
       </div>
     </nav>

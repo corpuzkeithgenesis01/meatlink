@@ -25,6 +25,14 @@ function PublicLayout() {
   );
 }
 
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <strong>MeatLink</strong> · Fresh chicken and pork from local sellers to your table.
+    </footer>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -78,6 +86,7 @@ function App() {
               <Route path="chat" element={<AdminChat />} />
             </Route>
           </Routes>
+          <Footer />
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

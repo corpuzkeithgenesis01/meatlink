@@ -21,9 +21,11 @@
 
 .stat-card {
   background: white;
-  padding: 16px;
-  border-radius: 6px;
-  border-left: 4px solid #b91c1c;
+  padding: 18px;
+  border-radius: var(--radius, 14px);
+  border: 1px solid var(--line, #e9e3df);
+  border-left: 4px solid var(--primary, #b91c1c);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(80, 35, 20, 0.05));
 }
 
 .stat-card .stat-number {

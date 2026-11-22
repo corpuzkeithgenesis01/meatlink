@@ -7,6 +7,8 @@ Layout:
 
 Ang `render.yaml` sa repo root ay Blueprint — awtomatikong gagawa ng dalawang service sa Render.
 
+> **UI update:** May local product illustrations na sa `frontend/public/images/` (SVG), kaya hindi na kailangan ng external image host. Hindi na rin naka-track ang `.env` at `node_modules` sa git — itakda ang lahat ng secrets sa Render Dashboard bago mag-deploy.
+
 ---
 
 ## Bago mag-deploy ⚠️

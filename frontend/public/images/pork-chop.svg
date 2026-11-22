@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Pork chop illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff7f7"/><stop offset="1" stop-color="#ffe0e4"/></linearGradient>
+    <linearGradient id="meat" x1="0.1" y1="0" x2="0.9" y2="1"><stop stop-color="#f3a5a2"/><stop offset="0.55" stop-color="#dd7b7f"/><stop offset="1" stop-color="#bd5665"/></linearGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#7c2b38" flood-opacity="0.18"/></filter>
+  </defs>
+  <rect width="400" height="400" rx="28" fill="url(#bg)"/>
+  <circle cx="332" cy="80" r="60" fill="#fff" opacity="0.35"/>
+  <ellipse cx="200" cy="332" rx="118" ry="15" fill="#7c2b38" opacity="0.12"/>
+  <g filter="url(#sh)">
+    <path d="M244 78c22-10 44 2 46 24 2 22-16 36-36 34-14-2-24-12-24-24 0-14 6-26 14-34Z" fill="#fff4ee" stroke="#d9a79b" stroke-width="3"/>
+    <path d="M220 132c44 8 82 48 78 98-4 48-46 84-98 84-52 0-94-36-98-84-4-50 34-90 78-98 14-3 26-3 40 0Z" fill="url(#meat)" stroke="#b9525d" stroke-width="3"/>
+    <path d="M144 172c-10 22-12 48-6 70" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity="0.55"/>
+    <path d="M244 162c18 18 28 42 28 66" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.4"/>
+    <ellipse cx="200" cy="232" rx="26" ry="34" fill="#a84052" opacity="0.35"/>
+    <path d="M188 216c-6 12-6 24 0 34" fill="none" stroke="#f8d5d0" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  </g>
+</svg>

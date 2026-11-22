@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Local environment files (secrets belong in Render Dashboard)
+.env
+.env.*
+!.env.example
+
+# Logs and OS/editor files
+logs/
+*.log
+.DS_Store
+.Thumbs.db
+.vscode/
+.idea/

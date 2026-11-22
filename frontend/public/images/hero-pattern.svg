@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff" stop-opacity="0.16"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.02"/></linearGradient>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.4" fill="#ffffff" fill-opacity="0.18"/></pattern>
+  </defs>
+  <rect width="600" height="400" fill="url(#dots)"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="2">
+    <circle cx="500" cy="120" r="120" fill="url(#g)"/>
+    <circle cx="500" cy="120" r="86"/>
+    <circle cx="530" cy="330" r="150" fill="url(#g)"/>
+    <circle cx="60" cy="360" r="120" fill="url(#g)"/>
+  </g>
+  <g fill="#ffffff" fill-opacity="0.14">
+    <path d="M470 84c26-10 52 6 52 32 0 22-20 36-40 32-16-4-26-16-24-30 2-14 6-26 12-34Z"/>
+    <path d="M548 248c22 8 34 32 28 54-6 22-30 32-48 22-14-8-20-24-14-38 4-14 18-32 34-38Z"/>
+    <path d="M96 300c20-14 46-10 58 8 10 18 2 40-16 48-18 8-40 0-46-18-4-14 0-30 4-38Z"/>
+  </g>
+</svg>

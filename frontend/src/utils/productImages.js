@@ -1,7 +1,16 @@
-// Local illustrations used for product cards, cart items and order history.
+// Real product photos bundled locally, with vector illustrations as a fallback.
 // No external image host is needed, so they also work offline in the PWA.
 
-const IMAGES = {
+const PHOTOS = {
+  wholeChicken: '/images/whole-chicken.jpg',
+  chickenBreast: '/images/chicken-breast.jpg',
+  chickenWings: '/images/chicken-wings.jpg',
+  porkBelly: '/images/pork-belly.jpg',
+  porkChop: '/images/pork-chop.jpg',
+  groundPork: '/images/ground-pork.jpg',
+};
+
+const ILLUSTRATIONS = {
   wholeChicken: '/images/whole-chicken.svg',
   chickenBreast: '/images/chicken-breast.svg',
   chickenWings: '/images/chicken-wings.svg',
@@ -11,29 +20,34 @@ const IMAGES = {
 };
 
 const MATCHERS = [
-  { pattern: /whole|buwisit|lechon|manok buo/i, src: IMAGES.wholeChicken },
-  { pattern: /breast|fillet|dibdib|pecho/i, src: IMAGES.chickenBreast },
-  { pattern: /wing|pakpak/i, src: IMAGES.chickenWings },
-  { pattern: /belly|liempo|samgyeopsal/i, src: IMAGES.porkBelly },
-  { pattern: /chop|cutlet|steak|babet/i, src: IMAGES.porkChop },
-  { pattern: /ground|mince|giniling|pork kasim/i, src: IMAGES.groundPork },
+  { pattern: /whole|lechon|manok buo/i, key: 'wholeChicken' },
+  { pattern: /breast|fillet|dibdib|pecho/i, key: 'chickenBreast' },
+  { pattern: /wing|pakpak/i, key: 'chickenWings' },
+  { pattern: /belly|liempo|samgyeopsal/i, key: 'porkBelly' },
+  { pattern: /chop|cutlet|steak|babet/i, key: 'porkChop' },
+  { pattern: /ground|mince|giniling/i, key: 'groundPork' },
 ];
 
-const CHICKEN_FALLBACK = IMAGES.wholeChicken;
-const PORK_FALLBACK = IMAGES.porkBelly;
-
-export function productImage(product = {}) {
-  if (product.image_url) return product.image_url;
+function imageKey(product = {}) {
+  if (product.image_url) return null;
 
   const name = String(product.name || product.product_name || '');
   const match = MATCHERS.find((m) => m.pattern.test(name));
-  if (match) return match.src;
+  if (match) return match.key;
 
   const category = String(product.category || '').toLowerCase();
-  if (category.includes('pork') || /pork|babo|liempo/i.test(name)) {
-    return PORK_FALLBACK;
-  }
-  return CHICKEN_FALLBACK;
+  if (category.includes('pork') || /pork|babo|liempo/i.test(name)) return 'porkBelly';
+  return 'wholeChicken';
+}
+
+export function productImage(product = {}) {
+  if (product.image_url) return product.image_url;
+  return PHOTOS[imageKey(product)];
+}
+
+export function productImageFallback(product = {}) {
+  if (product.image_url) return null;
+  return ILLUSTRATIONS[imageKey(product)];
 }
 
 export function productEmoji(product = {}) {

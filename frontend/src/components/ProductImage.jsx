@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
-import { productEmoji, productImage } from '../utils/productImages';
+import { productEmoji, productImage, productImageFallback } from '../utils/productImages';
 
 function ProductImage({ product, className = '', alt }) {
-  const src = productImage(product);
-  const [failed, setFailed] = useState(false);
+  const photoSrc = productImage(product);
+  const fallbackSrc = productImageFallback(product);
+  const [stage, setStage] = useState('photo');
 
-  useEffect(() => setFailed(false), [src]);
+  useEffect(() => setStage('photo'), [photoSrc]);
 
-  if (failed) {
+  const src = stage === 'photo' ? photoSrc : fallbackSrc;
+
+  if (stage === 'emoji' || !src) {
     return (
       <div className={`product-image product-image--fallback ${className}`} role="img" aria-label={alt || product?.name || 'Product'}>
         {productEmoji(product)}
@@ -21,7 +24,7 @@ function ProductImage({ product, className = '', alt }) {
       src={src}
       alt={alt || product?.name || 'Product'}
       loading="lazy"
-      onError={() => setFailed(true)}
+      onError={() => setStage(stage === 'photo' && fallbackSrc ? 'illustration' : 'emoji')}
     />
   );
 }

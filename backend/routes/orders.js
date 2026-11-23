@@ -102,6 +102,11 @@ async function restoreStock(orderId) {
 }
 
 router.post('/', verifyToken, async (req, res) => {
+  // Sellers/admins manage products; they cannot place buyer orders.
+  if (req.user.role === 'admin') {
+    return res.status(403).json({ error: 'Sellers cannot place orders' });
+  }
+
   const { items, buyer_type, pickup_notes } = req.body;
 
   if (!Array.isArray(items) || items.length === 0) {

@@ -7,6 +7,7 @@ function Navbar() {
   const { user, logout } = useAuth();
   const { count } = useCart();
   const navigate = useNavigate();
+  const isAdmin = user?.role === 'admin';
 
   function handleLogout() {
     logout();
@@ -23,15 +24,17 @@ function Navbar() {
       <div className="nav-right">
         <div className="nav-links">
           <Link to="/">Shop</Link>
-          <Link to="/cart" className="nav-cart">
-            Cart
-            {count > 0 && <span className="cart-badge">{count}</span>}
-          </Link>
+          {!isAdmin && (
+            <Link to="/cart" className="nav-cart">
+              Cart
+              {count > 0 && <span className="cart-badge">{count}</span>}
+            </Link>
+          )}
           {user && (
             <>
-              <Link to="/orders">My Orders</Link>
-              {user.role !== 'admin' && <Link to="/chat">Chat</Link>}
-              {user.role === 'admin' && <Link to="/admin">Admin</Link>}
+              {!isAdmin && <Link to="/orders">My Orders</Link>}
+              {!isAdmin && <Link to="/chat">Chat</Link>}
+              {isAdmin && <Link to="/admin">Admin</Link>}
             </>
           )}
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { API_URL } from '../api';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import ProductImage from '../components/ProductImage';
 import './Orders.css';
@@ -7,7 +8,9 @@ import './Orders.css';
 const CATEGORIES = ['all', 'chicken', 'pork'];
 
 function Home() {
+  const { user } = useAuth();
   const { addItem } = useCart();
+  const isAdmin = user?.role === 'admin';
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -132,13 +135,17 @@ function Home() {
                 <p className="price">
                   ₱{Number(p.price).toFixed(2)} <small>/ {p.unit}</small>
                 </p>
-                <button
-                  className="btn btn-primary btn-block"
-                  disabled={p.stock <= 0}
-                  onClick={() => handleAdd(p)}
-                >
-                  {p.stock > 0 ? '+ Add to cart' : 'Out of stock'}
-                </button>
+                {isAdmin ? (
+                  <p className="muted admin-note">Managed in Admin → Products</p>
+                ) : (
+                  <button
+                    className="btn btn-primary btn-block"
+                    disabled={p.stock <= 0}
+                    onClick={() => handleAdd(p)}
+                  >
+                    {p.stock > 0 ? '+ Add to cart' : 'Out of stock'}
+                  </button>
+                )}
               </div>
             </article>
           ))}

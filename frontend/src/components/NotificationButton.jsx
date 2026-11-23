@@ -6,6 +6,7 @@ import {
   enablePush,
   isPushEnabled,
   pushSupported,
+  sendTestPush,
 } from '../push';
 
 function NotificationButton() {
@@ -17,16 +18,16 @@ function NotificationButton() {
     let cancelled = false;
 
     async function check() {
-      const result = await isPushEnabled();
+      const result = await isPushEnabled(token);
       if (!cancelled) setEnabled(result);
     }
 
-    if (user) check();
+    if (user && token) check();
 
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, token]);
 
   if (!user || !pushSupported()) return null;
 
@@ -63,10 +64,29 @@ function NotificationButton() {
     }
   }
 
+  async function handleTest() {
+    setLoading(true);
+    try {
+      await sendTestPush(token);
+      showSuccess('Test notification sent. Check your device.', 'Test notification');
+    } catch (err) {
+      showError(err.message, 'Test failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <button onClick={handleClick} disabled={loading}>
-      {enabled ? 'Notifications: ON' : 'Enable notifications'}
-    </button>
+    <span className="notification-controls">
+      <button onClick={handleClick} disabled={loading}>
+        {enabled ? 'Notifications: ON' : 'Enable notifications'}
+      </button>
+      {enabled && (
+        <button className="btn-small" onClick={handleTest} disabled={loading}>
+          Test
+        </button>
+      )}
+    </span>
   );
 }
 

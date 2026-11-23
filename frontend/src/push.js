@@ -15,15 +15,21 @@ export function pushSupported() {
   );
 }
 
-// Tingnan kung naka-on na ang notification sa browser na ito
-export async function isPushEnabled() {
-  if (!pushSupported() || Notification.permission !== 'granted') return false;
+// Tingnan kung may subscription ang kasalukuyang naka-login na user.
+// Hindi ito sapat ang browser lang: iisang browser ay pwede gamitin ng buyer at seller.
+export async function isPushEnabled(token) {
+  if (!pushSupported() || !token) return false;
 
-  const registration = await navigator.serviceWorker.getRegistration();
-  if (!registration) return false;
-
-  const subscription = await registration.pushManager.getSubscription();
-  return Boolean(subscription);
+  try {
+    const res = await fetch(API_URL + '/api/push/status', {
+      headers: { Authorization: 'Bearer ' + token },
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return Boolean(data.enabled);
+  } catch {
+    return false;
+  }
 }
 
 // I-on ang notification
@@ -67,6 +73,19 @@ export async function enablePush(token) {
   if (!res.ok) {
     const data = await res.json();
     throw new Error(data.error || 'Failed to save subscription');
+  }
+}
+
+// Magpadala ng test notification sa kasalukuyang account
+export async function sendTestPush(token) {
+  const res = await fetch(API_URL + '/api/push/test', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token },
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || 'Failed to send test notification');
   }
 }
 

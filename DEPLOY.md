@@ -7,7 +7,9 @@ Layout:
 
 Ang `render.yaml` sa repo root ay Blueprint — awtomatikong gagawa ng dalawang service sa Render.
 
-> **UI update:** May local product illustrations na sa `frontend/public/images/` (SVG), kaya hindi na kailangan ng external image host. Hindi na rin naka-track ang `.env` at `node_modules` sa git — itakda ang lahat ng secrets sa Render Dashboard bago mag-deploy.
+> **UI update:** May local product photos na sa `frontend/public/images/` (SVG ang fallback), kaya hindi na kailangan ng external image host. Hindi na rin naka-track ang `.env` at `node_modules` sa git — itakda ang lahat ng secrets sa Render Dashboard bago mag-deploy.
+
+> **Push update:** Patakbuhin ang `backend/push_subscriptions_schema.sql` sa Supabase SQL Editor para magamit ang iisang browser ng buyer at seller. Kung hindi ito tatakbuhin, ang huling nag-enable lang ang makakatanggap ng notification. May **Test** button na rin sa notification control para masubukan agad. Ang seller/admin ay hindi na makakapag-order — products lang ang ine-manage nila.
 
 ---
 

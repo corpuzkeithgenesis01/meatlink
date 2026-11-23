@@ -63,6 +63,7 @@ async function registerBackgroundSync() {
 export async function queueOrder(token, payload) {
   await withStore('readwrite', (store) =>
     store.add({
+      type: 'order',
       apiUrl: API_URL,
       token,
       payload,
@@ -74,8 +75,34 @@ export async function queueOrder(token, payload) {
   return registerBackgroundSync();
 }
 
+export async function queueMessage(token, payload) {
+  await withStore('readwrite', (store) =>
+    store.add({
+      type: 'message',
+      apiUrl: API_URL,
+      token,
+      payload,
+      createdAt: Date.now(),
+    })
+  );
+
+  window.dispatchEvent(new Event('outbox-changed'));
+  return true;
+}
+
+export async function getQueuedMessages() {
+  const all = await withStore('readonly', (store) => store.getAll());
+  return all.filter((item) => item.type === 'message');
+}
+
+export async function removeQueuedItem(id) {
+  await withStore('readwrite', (store) => store.delete(id));
+  window.dispatchEvent(new Event('outbox-changed'));
+}
+
 export async function countQueuedOrders() {
-  return withStore('readonly', (store) => store.count());
+  const all = await withStore('readonly', (store) => store.getAll());
+  return all.filter((item) => item.type === 'order' || !item.type).length;
 }
 
 let flushing = false;
@@ -85,7 +112,8 @@ export async function flushQueuedOrders() {
   flushing = true;
 
   try {
-    const orders = await withStore('readonly', (store) => store.getAll());
+    const all = await withStore('readonly', (store) => store.getAll());
+    const orders = all.filter((item) => item.type === 'order' || !item.type);
 
     for (const order of orders) {
       let response;

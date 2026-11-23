@@ -100,7 +100,10 @@ async function withStore(mode, action) {
   });
 }
 
-const getQueuedOrders = () => withStore('readonly', (store) => store.getAll());
+const getQueuedOrders = () =>
+  withStore('readonly', (store) => store.getAll()).then((all) =>
+    all.filter((item) => item.type === 'order' || !item.type)
+  );
 const removeQueuedOrder = (id) => withStore('readwrite', (store) => store.delete(id));
 
 

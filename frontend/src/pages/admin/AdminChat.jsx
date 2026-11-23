@@ -3,6 +3,7 @@ import { API_URL } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { connectSocket } from '../../socket';
 import { getQueuedMessages, queueMessage, removeQueuedItem } from '../../offlineQueue';
+import { notifyBrowser } from '../../utils/browserNotify';
 import '../Chat.css';
 
 function pendingMessage(content, senderId, buyerId, clientId) {
@@ -157,6 +158,15 @@ function AdminChat() {
         setMessages((current) =>
           current.some((m) => m.id === message.id) ? current : [...current, message]
         );
+      }
+
+      // Buyer messages are identified by sender_id === buyer_id.
+      if (message.sender_id === message.buyer_id) {
+        notifyBrowser({
+          title: 'New message from a buyer',
+          body: message.content,
+          url: '/admin/chat',
+        });
       }
     });
 

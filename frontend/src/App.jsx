@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { connectSocket } from './socket';
+import { notifyBrowser } from './utils/browserNotify';
 import Navbar from './components/Navbar';
 import OfflineBanner from './components/OfflineBanner';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -33,11 +36,52 @@ function Footer() {
   );
 }
 
+function LiveNotifications() {
+  const { token, user } = useAuth();
+
+  useEffect(() => {
+    if (!token || !user) return undefined;
+
+    const socket = connectSocket(token);
+
+    socket.on('order:status', (data) => {
+      notifyBrowser({
+        title: data.title,
+        body: data.body,
+        url: data.url || '/orders',
+      });
+    });
+
+    socket.on('chat:message', (message) => {
+      if (user.role === 'admin') {
+        if (message.sender_id === message.buyer_id) {
+          notifyBrowser({
+            title: 'New message from a buyer',
+            body: message.content,
+            url: '/admin/chat',
+          });
+        }
+      } else if (message.sender_id !== user.id) {
+        notifyBrowser({
+          title: 'New message from the seller',
+          body: message.content,
+          url: '/chat',
+        });
+      }
+    });
+
+    return () => socket.disconnect();
+  }, [token, user]);
+
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
+          <LiveNotifications />
           <Navbar />
           <OfflineBanner />
           <Routes>

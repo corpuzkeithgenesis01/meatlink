@@ -2,6 +2,7 @@ const express = require('express');
 const supabase = require('../config/supabase');
 const { verifyToken, requireAdmin } = require('../middleware/auth');
 const { sendToUser, sendToAdmins } = require('../utils/push');
+const { getIO } = require('../socket');
 
 const router = express.Router();
 
@@ -323,6 +324,17 @@ router.patch('/:id/status', verifyToken, requireAdmin, async (req, res) => {
         };
 
   sendToUser(order.user_id, { ...statusNotice, url: '/orders' });
+
+  // Real-time update for an online buyer (web-push covers the offline case).
+  const io = getIO();
+  if (io) {
+    io.to(`user:${order.user_id}`).emit('order:status', {
+      id: order.id,
+      status,
+      ...statusNotice,
+      url: '/orders',
+    });
+  }
 
   res.json(updated);
 });

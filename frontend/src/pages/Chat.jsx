@@ -3,6 +3,7 @@ import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { connectSocket } from '../socket';
 import { getQueuedMessages, queueMessage, removeQueuedItem } from '../offlineQueue';
+import { notifyBrowser } from '../utils/browserNotify';
 import './Chat.css';
 
 function pendingMessage(content, userId, clientId) {
@@ -109,6 +110,14 @@ function Chat() {
       setMessages((current) =>
         current.some((m) => m.id === message.id) ? current : [...current, message]
       );
+
+      if (message.sender_id !== user.id) {
+        notifyBrowser({
+          title: 'New message from the seller',
+          body: message.content,
+          url: '/chat',
+        });
+      }
     });
 
     function handleOnline() {
@@ -120,7 +129,7 @@ function Chat() {
       window.removeEventListener('online', handleOnline);
       socket.disconnect();
     };
-  }, [token, loadHistory, restoreQueued, flushQueued]);
+  }, [token, user.id, loadHistory, restoreQueued, flushQueued]);
 
   useEffect(() => {
     if (listRef.current) {

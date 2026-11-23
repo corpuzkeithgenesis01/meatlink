@@ -5,6 +5,12 @@ const { sendToUser, sendToAdmins } = require('./utils/push');
 
 const MAX_MESSAGE_LENGTH = 1000;
 
+let ioInstance = null;
+
+function getIO() {
+  return ioInstance;
+}
+
 async function getPrimaryAdminId() {
   const { data } = await supabase
     .from('users')
@@ -21,6 +27,7 @@ function setupSocket(httpServer) {
   const io = new Server(httpServer, {
     cors: { origin: '*' },
   });
+  ioInstance = io;
 
   io.use((socket, next) => {
     const token = socket.handshake.auth && socket.handshake.auth.token;
@@ -152,5 +159,7 @@ function setupSocket(httpServer) {
 
   return io;
 }
+
+setupSocket.getIO = getIO;
 
 module.exports = setupSocket;

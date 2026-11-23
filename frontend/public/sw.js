@@ -202,6 +202,8 @@ self.addEventListener('push', (event) => {
         type: 'push-notification',
         title: data.title,
         body: data.body,
+        recipientId: data.recipientId,
+        recipientRole: data.recipientRole,
       }),
     ])
   );

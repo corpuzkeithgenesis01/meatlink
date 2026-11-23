@@ -19,6 +19,19 @@ export function setupPushAlerts() {
   navigator.serviceWorker.addEventListener('message', (event) => {
     const message = event.data;
     if (!message || message.type !== 'push-notification') return;
+
+    // The service worker broadcasts to every open tab. Only show the in-app
+    // alert in the tab belonging to the intended recipient.
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem('user'));
+    } catch {
+      // not logged in
+    }
+
+    if (message.recipientId && Number(message.recipientId) !== Number(currentUser?.id)) return;
+    if (message.recipientRole && message.recipientRole !== currentUser?.role) return;
+
     showNotificationAlert(message);
   });
 }

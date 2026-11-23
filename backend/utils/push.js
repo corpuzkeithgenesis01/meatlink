@@ -49,7 +49,7 @@ async function sendToUser(userId, payload) {
       .select('*')
       .eq('user_id', userId);
 
-    await sendToSubscriptions(data || [], payload);
+    await sendToSubscriptions(data || [], { ...payload, recipientId: userId });
   } catch (err) {
     console.log('Push error:', err.message);
   }
@@ -73,7 +73,7 @@ async function sendToAdmins(payload) {
       .select('*')
       .in('user_id', adminIds);
 
-    await sendToSubscriptions(data || [], payload);
+    await sendToSubscriptions(data || [], { ...payload, recipientRole: 'admin' });
   } catch (err) {
     console.log('Push error:', err.message);
   }

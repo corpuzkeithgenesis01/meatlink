@@ -16,8 +16,8 @@ function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/');
+      const data = await login(email, password);
+      navigate(data?.user?.role === 'admin' ? '/admin' : '/');
     } catch (err) {
       setError(err.message);
     } finally {

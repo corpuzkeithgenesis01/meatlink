@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -49,6 +50,10 @@ function Home() {
       .includes(search.trim().toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  if (isAdmin) {
+    return <Navigate to="/admin" replace />;
+  }
 
   return (
     <div>

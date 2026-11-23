@@ -29,6 +29,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     setAuth({ token: data.token, user: data.user });
+    return data;
   }
 
   const login = (email, password) => request('login', { email, password });

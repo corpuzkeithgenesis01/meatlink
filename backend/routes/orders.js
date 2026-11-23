@@ -308,11 +308,21 @@ router.patch('/:id/status', verifyToken, requireAdmin, async (req, res) => {
     await restoreStock(order.id);
   }
 
-  sendToUser(order.user_id, {
-    title: `Order #${order.id}`,
-    body: `Your order #${order.id} ${STATUS_MESSAGES[status]}`,
-    url: '/orders',
-  });
+  const statusNotice =
+    status === 'ready'
+      ? {
+          title: `Order #${order.id} is ready`,
+          body:
+            order.fulfillment === 'delivery'
+              ? `Your order #${order.id} is ready for delivery.`
+              : `Your order #${order.id} is ready for pick-up at the store.`,
+        }
+      : {
+          title: `Order #${order.id}`,
+          body: `Your order #${order.id} ${STATUS_MESSAGES[status]}`,
+        };
+
+  sendToUser(order.user_id, { ...statusNotice, url: '/orders' });
 
   res.json(updated);
 });

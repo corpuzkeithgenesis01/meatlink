@@ -10,6 +10,7 @@ const FULFILLMENTS = ['pickup', 'delivery'];
 const PAYMENT_METHODS = ['cod', 'cop'];
 const WHOLESALE_MIN_KG = 10;
 const WHOLESALE_DISCOUNT_PER_KG = 10;
+const DELIVERY_FEE = 50;
 
 function normalizeOrderOptions(body) {
   const fulfillment = FULFILLMENTS.includes(body.fulfillment)
@@ -174,7 +175,8 @@ router.post('/', verifyToken, async (req, res) => {
   }
 
   const discount = isWholesale ? totalKg * WHOLESALE_DISCOUNT_PER_KG : 0;
-  const total = Math.round(Math.max(subtotal - discount, 0) * 100) / 100;
+  const deliveryFee = options.fulfillment === 'delivery' ? DELIVERY_FEE : 0;
+  const total = Math.round((Math.max(subtotal - discount, 0) + deliveryFee) * 100) / 100;
 
   const { data: order, error: orderError } = await supabase
     .from('orders')

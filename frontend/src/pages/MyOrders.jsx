@@ -134,6 +134,10 @@ function MyOrders() {
               </p>
             )}
 
+            {order.fulfillment === 'delivery' && (
+              <p className="order-meta">Includes ₱50.00 delivery fee.</p>
+            )}
+
             <p className="cart-total">Total: ₱{order.total}</p>
 
             {order.status === 'pending' && (

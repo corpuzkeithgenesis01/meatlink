@@ -157,6 +157,11 @@
 .address-grid { display: grid; gap: 10px; }
 .address-grid label { font-size: 0.82rem; font-weight: 600; }
 
+.summary-lines { display: flex; flex-direction: column; gap: 6px; }
+.summary-line { display: flex; justify-content: space-between; gap: 10px; font-size: 0.9rem; color: var(--muted); }
+.summary-line span:last-child { font-weight: 600; color: var(--ink); }
+.summary-line.discount-line span { color: #16a34a; }
+
 .summary-total {
   display: flex;
   align-items: center;

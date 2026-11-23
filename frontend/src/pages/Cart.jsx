@@ -9,6 +9,7 @@ import './Orders.css';
 
 const WHOLESALE_MIN_KG = 10;
 const WHOLESALE_DISCOUNT_PER_KG = 10;
+const DELIVERY_FEE = 50;
 
 function Cart() {
   const { token } = useAuth();
@@ -32,7 +33,8 @@ function Cart() {
     .reduce((sum, i) => sum + i.quantity, 0);
   const wholesaleEligible = isWholesale && totalKg >= WHOLESALE_MIN_KG;
   const discount = wholesaleEligible ? totalKg * WHOLESALE_DISCOUNT_PER_KG : 0;
-  const payable = Math.max(total - discount, 0);
+  const deliveryFee = fulfillment === 'delivery' ? DELIVERY_FEE : 0;
+  const payable = Math.max(total - discount, 0) + deliveryFee;
 
   function handleFulfillmentChange(value) {
     setFulfillment(value);
@@ -311,6 +313,25 @@ function Cart() {
               onChange={(e) => setPickupNotes(e.target.value)}
             />
           </label>
+
+          <div className="summary-lines">
+            <div className="summary-line">
+              <span>Subtotal</span>
+              <span>₱{total.toFixed(2)}</span>
+            </div>
+            {discount > 0 && (
+              <div className="summary-line discount-line">
+                <span>Wholesale discount</span>
+                <span>−₱{discount.toFixed(2)}</span>
+              </div>
+            )}
+            {fulfillment === 'delivery' && (
+              <div className="summary-line">
+                <span>Delivery fee</span>
+                <span>₱{deliveryFee.toFixed(2)}</span>
+              </div>
+            )}
+          </div>
 
           <div className="summary-total">
             <span>Total</span>

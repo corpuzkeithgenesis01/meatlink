@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { connectSocket } from './socket';
-import { notifyBrowser } from './utils/browserNotify';
+import { notifyUser } from './utils/notifyUser';
 import Navbar from './components/Navbar';
 import OfflineBanner from './components/OfflineBanner';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -45,24 +45,33 @@ function LiveNotifications() {
     const socket = connectSocket(token);
 
     socket.on('order:status', (data) => {
-      notifyBrowser({
+      notifyUser({
         title: data.title,
         body: data.body,
         url: data.url || '/orders',
       });
     });
 
+    socket.on('order:new', (data) => {
+      if (user.role !== 'admin') return;
+      notifyUser({
+        title: data.title,
+        body: data.body,
+        url: '/admin/orders',
+      });
+    });
+
     socket.on('chat:message', (message) => {
       if (user.role === 'admin') {
         if (message.sender_id === message.buyer_id) {
-          notifyBrowser({
+          notifyUser({
             title: 'New message from a buyer',
             body: message.content,
             url: '/admin/chat',
           });
         }
       } else if (message.sender_id !== user.id) {
-        notifyBrowser({
+        notifyUser({
           title: 'New message from the seller',
           body: message.content,
           url: '/chat',

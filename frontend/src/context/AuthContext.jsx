@@ -5,8 +5,11 @@ const AuthContext = createContext(null);
 
 function readSaved() {
   try {
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user'));
+    // sessionStorage is per tab, so a buyer tab and a seller tab in the same
+    // browser can stay logged in as different accounts.
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const rawUser = sessionStorage.getItem('user') || localStorage.getItem('user');
+    const user = JSON.parse(rawUser);
     return token && user ? { token, user } : { token: null, user: null };
   } catch {
     return { token: null, user: null };
@@ -26,6 +29,8 @@ export function AuthProvider({ children }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Something went wrong');
 
+    sessionStorage.setItem('token', data.token);
+    sessionStorage.setItem('user', JSON.stringify(data.user));
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     setAuth({ token: data.token, user: data.user });
@@ -37,6 +42,8 @@ export function AuthProvider({ children }) {
     request('register', { name, email, password });
 
   function logout() {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setAuth({ token: null, user: null });

@@ -244,11 +244,16 @@ router.post('/', verifyToken, async (req, res) => {
     .eq('id', req.user.id)
     .single();
 
-  sendToAdmins({
+  const newOrderNotice = {
     title: `New order ${orderCode(order.id)}`,
     body: `${buyer?.name || 'A buyer'} placed an order worth ₱${total}.`,
     url: '/admin/orders',
-  });
+  };
+  sendToAdmins(newOrderNotice);
+
+  // Real-time alert for sellers who are currently online.
+  const io = getIO();
+  if (io) io.to('admins').emit('order:new', newOrderNotice);
 
   res.status(201).json({ ...order, order_items: itemRows });
 });

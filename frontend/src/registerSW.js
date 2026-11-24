@@ -1,4 +1,5 @@
 import { showNotificationAlert } from './utils/alerts';
+import { markNotified, notificationKey, shouldNotify } from './utils/notificationDedupe';
 
 // Irehistro ang service worker pagbukas ng app
 export function registerServiceWorker() {
@@ -24,13 +25,19 @@ export function setupPushAlerts() {
     // alert in the tab belonging to the intended recipient.
     let currentUser = null;
     try {
-      currentUser = JSON.parse(localStorage.getItem('user'));
+      // Per-tab identity: buyer and seller can be logged in on the same browser.
+      const rawUser = sessionStorage.getItem('user') || localStorage.getItem('user');
+      currentUser = JSON.parse(rawUser);
     } catch {
       // not logged in
     }
 
     if (message.recipientId && Number(message.recipientId) !== Number(currentUser?.id)) return;
     if (message.recipientRole && message.recipientRole !== currentUser?.role) return;
+
+    const key = notificationKey(message);
+    if (!shouldNotify(key)) return;
+    markNotified(key);
 
     showNotificationAlert(message);
   });

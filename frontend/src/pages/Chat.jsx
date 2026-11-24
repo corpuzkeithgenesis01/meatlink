@@ -3,7 +3,7 @@ import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { connectSocket } from '../socket';
 import { getQueuedMessages, queueMessage, removeQueuedItem } from '../offlineQueue';
-import { notifyBrowser } from '../utils/browserNotify';
+import { notifyUser } from '../utils/notifyUser';
 import './Chat.css';
 
 function pendingMessage(content, userId, clientId) {
@@ -112,7 +112,7 @@ function Chat() {
       );
 
       if (message.sender_id !== user.id) {
-        notifyBrowser({
+        notifyUser({
           title: 'New message from the seller',
           body: message.content,
           url: '/chat',

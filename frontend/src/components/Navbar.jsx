@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import NotificationButton from './NotificationButton';
+import InstallButton from './InstallButton';
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -41,6 +42,7 @@ function Navbar() {
 
         {user ? (
           <div className="nav-account">
+            <InstallButton />
             <NotificationButton />
             <span className="user-chip">
               <span className="avatar">{String(user.name || '?').charAt(0).toUpperCase()}</span>
@@ -53,6 +55,7 @@ function Navbar() {
           </div>
         ) : (
           <div className="nav-account">
+            <InstallButton />
             <Link className="btn btn-outline-light" to="/login">Login</Link>
             <Link className="btn btn-light" to="/register">Get started</Link>
           </div>

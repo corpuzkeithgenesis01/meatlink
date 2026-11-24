@@ -13,6 +13,10 @@ const WHOLESALE_MIN_KG = 10;
 const WHOLESALE_DISCOUNT_PER_KG = 10;
 const DELIVERY_FEE = 50;
 
+function orderCode(id) {
+  return `ML-${String(id).padStart(5, '0')}`;
+}
+
 function normalizeOrderOptions(body) {
   const fulfillment = FULFILLMENTS.includes(body.fulfillment)
     ? body.fulfillment
@@ -241,7 +245,7 @@ router.post('/', verifyToken, async (req, res) => {
     .single();
 
   sendToAdmins({
-    title: `New order #${order.id}`,
+    title: `New order ${orderCode(order.id)}`,
     body: `${buyer?.name || 'A buyer'} placed an order worth ₱${total}.`,
     url: '/admin/orders',
   });
@@ -312,15 +316,15 @@ router.patch('/:id/status', verifyToken, requireAdmin, async (req, res) => {
   const statusNotice =
     status === 'ready'
       ? {
-          title: `Order #${order.id} is ready`,
+          title: `Order ${orderCode(order.id)} is ready`,
           body:
             order.fulfillment === 'delivery'
-              ? `Your order #${order.id} is ready for delivery.`
-              : `Your order #${order.id} is ready for pick-up at the store.`,
+              ? `Your order ${orderCode(order.id)} is ready for delivery.`
+              : `Your order ${orderCode(order.id)} is ready for pick-up at the store.`,
         }
       : {
-          title: `Order #${order.id}`,
-          body: `Your order #${order.id} ${STATUS_MESSAGES[status]}`,
+          title: `Order ${orderCode(order.id)}`,
+          body: `Your order ${orderCode(order.id)} ${STATUS_MESSAGES[status]}`,
         };
 
   sendToUser(order.user_id, { ...statusNotice, url: '/orders' });
@@ -372,8 +376,8 @@ router.patch('/:id/cancel', verifyToken, async (req, res) => {
   await restoreStock(order.id);
 
   sendToAdmins({
-    title: `Order #${order.id} cancelled`,
-    body: `The buyer cancelled order #${order.id}.`,
+    title: `Order ${orderCode(order.id)} cancelled`,
+    body: `The buyer cancelled order ${orderCode(order.id)}.`,
     url: '/admin/orders',
   });
 

@@ -4,6 +4,7 @@ import { API_URL } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { confirmAction } from '../utils/alerts';
 import ProductImage from '../components/ProductImage';
+import { orderCode } from '../utils/orderCode';
 import './Orders.css';
 
 function MyOrders() {
@@ -81,7 +82,7 @@ function MyOrders() {
         orders.map((order) => (
           <div key={order.id} className="order-card">
             <div className="order-head">
-              <h3>Order #{order.id}</h3>
+              <h3>Order {orderCode(order.id)}</h3>
               <span className={`badge badge-${order.status}`}>{order.status}</span>
             </div>
 

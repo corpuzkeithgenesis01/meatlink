@@ -7,7 +7,6 @@ import {
   enablePush,
   isPushEnabled,
   pushSupported,
-  sendTestPush,
 } from '../push';
 
 function NotificationButton() {
@@ -100,28 +99,11 @@ function NotificationButton() {
     }
   }
 
-  async function handleTest() {
-    setLoading(true);
-    try {
-      await sendTestPush(token);
-      showSuccess('Test notification sent. Check your device.', 'Test notification');
-    } catch (err) {
-      showError(err.message, 'Test failed');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <span className="notification-controls">
       <button onClick={handleClick} disabled={loading}>
         {enabled ? 'Notifications: ON' : 'Enable notifications'}
       </button>
-      {enabled && (
-        <button className="btn-small" onClick={handleTest} disabled={loading}>
-          Test
-        </button>
-      )}
       {permissionDenied && (
         <small className="notification-hint">
           Allow notifications for this site in your browser settings.

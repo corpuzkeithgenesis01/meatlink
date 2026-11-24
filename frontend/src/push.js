@@ -76,19 +76,6 @@ export async function enablePush(token) {
   }
 }
 
-// Magpadala ng test notification sa kasalukuyang account
-export async function sendTestPush(token) {
-  const res = await fetch(API_URL + '/api/push/test', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + token },
-  });
-
-  if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data.error || 'Failed to send test notification');
-  }
-}
-
 // I-off ang notification
 export async function disablePush(token) {
   const registration = await navigator.serviceWorker.getRegistration();

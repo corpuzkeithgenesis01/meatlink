@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { confirmAction, showError, showSuccess } from '../utils/alerts';
+import { setNotificationsEnabledFor } from '../utils/notificationPref';
 import {
   disablePush,
   enablePush,
@@ -31,7 +32,10 @@ function NotificationButton() {
 
     async function check() {
       const result = await isPushEnabled(token);
-      if (!cancelled) setEnabled(result);
+      if (!cancelled) {
+        setEnabled(result);
+        setNotificationsEnabledFor(user.id, result);
+      }
     }
 
     if (user && token) check();
@@ -82,10 +86,12 @@ function NotificationButton() {
     try {
       if (enabled) {
         await disablePush(token);
+        setNotificationsEnabledFor(user.id, false);
         setEnabled(false);
         showSuccess('Notifications are now off.', 'Notifications off');
       } else {
         await enablePush(token);
+        setNotificationsEnabledFor(user.id, true);
         setEnabled(true);
         showSuccess(
           'You will now receive order updates on this device.',

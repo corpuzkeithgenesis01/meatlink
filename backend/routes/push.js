@@ -70,11 +70,12 @@ router.post('/unsubscribe', verifyToken, async (req, res) => {
     return res.status(400).json({ error: 'endpoint is required' });
   }
 
+  // One endpoint = one device. Turning notifications off removes every
+  // account linked to this device so nothing else can push to it.
   const { error } = await supabase
     .from('push_subscriptions')
     .delete()
-    .eq('endpoint', endpoint)
-    .eq('user_id', req.user.id);
+    .eq('endpoint', endpoint);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json({ message: 'Unsubscribed from notifications' });
